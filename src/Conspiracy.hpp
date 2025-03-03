@@ -10,7 +10,7 @@ class Conspiracy {
         ~Conspiracy();
         void display_matrix();
         Oriented_Graph graph;
-        // Matrix matrix;
+        Matrix matrix;
 
     private:
         void parse_file(std::string relationship_file, std::string matrix_file);

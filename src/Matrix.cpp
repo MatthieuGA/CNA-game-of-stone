@@ -115,3 +115,39 @@ Matrix Matrix::parse_graph(const std::string &filename, const std::string &delim
 
     return graph;
 }
+
+int Matrix::distance(const std::string &node1, const std::string &node2) const
+{
+    if (legend.find(node1) == legend.end() || legend.find(node2) == legend.end()) {
+        return -1;
+    }
+
+    int start = legend.at(node1);
+    int end = legend.at(node2);
+
+    std::vector<int> dist(rows, -1);
+    std::vector<bool> visited(rows, false);
+    std::queue<int> q;
+
+    dist[start] = 0;
+    q.push(start);
+
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+
+        if (current == end) {
+            return dist[current];
+        }
+
+        for (unsigned int i = 0; i < cols; ++i) {
+            if (mat[current][i] != 0 && !visited[i]) {
+                visited[i] = true;
+                dist[i] = dist[current] + 1;
+                q.push(i);
+            }
+        }
+    }
+
+    return -1;
+}

@@ -7,10 +7,9 @@
 
 #include "Conspiracy.hpp"
 
-Conspiracy::Conspiracy(std::string relationship_file, std::string plot_file)
+Conspiracy::Conspiracy(std::string relationship_file, std::string plot_file) : matrix(Matrix::parse_graph(relationship_file, " is friends with "))
 {
     parse_file(relationship_file, plot_file);
-    // matrix = Matrix::parse_matrix(matrix_file);
 }
 
 Conspiracy::~Conspiracy()
@@ -24,5 +23,5 @@ void Conspiracy::parse_file(std::string relationship_file, std::string plot_file
 
 void Conspiracy::display_matrix()
 {
-    // std::cout << matrix << std::endl;
+    std::cout << matrix << std::endl;
 }

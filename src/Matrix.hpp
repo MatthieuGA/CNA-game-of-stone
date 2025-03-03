@@ -10,13 +10,10 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <unordered_map>
 #include <map>
-#include <fstream>
-#include <sstream>
 #include <stdexcept>
-#include <unordered_map>
-#include <map>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -37,6 +34,8 @@ public:
     void print_legend(std::ostream& os) const;
 
     static Matrix parse_graph(const std::string &filename, const std::string &delimiter);
+
+    int distance(const std::string &node1, const std::string &node2) const;
 
 private:
     unsigned int rows;

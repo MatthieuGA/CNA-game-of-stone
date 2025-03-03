@@ -18,8 +18,9 @@ void help()
 int links(int ac, char **av)
 {
     Matrix matrix = Matrix::parse_graph(av[2], " is friends with ");
-    matrix.print_legend(std::cout);
-    std::cout << matrix;
+    // matrix.print_legend(std::cout);
+    // std::cout << matrix;
+    std::cout << "Degree of separation between " << av[3] << " and " << av[4] << " is " << matrix.distance(av[3], av[4]) << std::endl;
     return 0;
 }
 
