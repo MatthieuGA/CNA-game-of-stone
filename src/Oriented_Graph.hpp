@@ -27,8 +27,6 @@ class Oriented_Graph {
         void add_plottings(std::string node1, std::string node2);
         void display_graph();
         static Oriented_Graph parse_graph(const std::string &filename, const std::string &delimiter);
-
-    private:
         std::map<std::string, std::shared_ptr<Node>> nodes;
 };
 

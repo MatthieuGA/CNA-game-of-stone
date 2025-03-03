@@ -2,3 +2,4 @@ friends.txt
 plots.txt
 *.o
 game_of_stones
+.vs*

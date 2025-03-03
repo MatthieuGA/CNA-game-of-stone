@@ -15,7 +15,7 @@ void help()
     "\tn\tmaximum length of friendship paths\n");
 }
 
-int links(int ac, char **av)
+int links(char **av)
 {
     Matrix matrix = Matrix::parse_graph(av[2], " is friends with ");
     // matrix.print_legend(std::cout);
@@ -32,7 +32,18 @@ int plots(std::string relationship_file, std::string matrix_file, std::string nb
         throw std::runtime_error("n must be a positive integer");
     }
     Conspiracy conspiracy(relationship_file, matrix_file);
-    conspiracy.graph.display_graph();
+    for (auto &node : conspiracy.graph.nodes.at(QUEEN)->plotting_me) {
+        PathToTakeDown path;
+        path = conspiracy.get_path(node->name, n, path);
+        if (path.length == -1) {
+            std::cout << "No conspiracy possible against " << node->name << std::endl;
+        } else {
+            for (auto &node : path.path) {
+                std::cout << node << (node == path.path.back() ? "" : " <- ");
+            }
+            std::cout << std::endl;
+        }
+    }
     return 0;
 }
 
@@ -49,7 +60,7 @@ int main(int ac, char **av)
     }
     try {
         if (std::string(av[1]) == "--links") {
-            return links(ac, av);
+            return links(av);
         } else {
             return plots(av[2], av[3], av[4]);
         }
