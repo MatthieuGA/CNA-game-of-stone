@@ -5,6 +5,9 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
 
 class Node {
     public:
@@ -24,6 +27,7 @@ class Oriented_Graph {
 
         void add_node(std::string name);
         void add_plottings(std::string node1, std::string node2);
+        static Oriented_Graph parse_graph(const std::string &filename, const std::string &delimiter);
 
     private:
         std::map<std::string, std::shared_ptr<Node>> nodes;
