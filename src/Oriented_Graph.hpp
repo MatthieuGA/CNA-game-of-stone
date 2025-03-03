@@ -15,18 +15,17 @@ class Node {
         ~Node() {}
         std::vector<std::shared_ptr<Node>> plotting_against;
         std::vector<std::shared_ptr<Node>> plotting_me;
-
-    private:
         std::string name;
 };
 
 class Oriented_Graph {
     public:
-        Oriented_Graph() {}
+        Oriented_Graph();
         ~Oriented_Graph();
 
         void add_node(std::string name);
         void add_plottings(std::string node1, std::string node2);
+        void display_graph();
         static Oriented_Graph parse_graph(const std::string &filename, const std::string &delimiter);
 
     private:

@@ -23,6 +23,8 @@ void Oriented_Graph::add_plottings(std::string node1, std::string node2)
 
 void Oriented_Graph::add_node(std::string name)
 {
+    if (nodes.find(name) != nodes.end())
+        return;
     nodes[name] = std::make_shared<Node>(name);
 }
 
@@ -53,4 +55,16 @@ Oriented_Graph Oriented_Graph::parse_graph(const std::string &filename, const st
 
     file.close();
     return graph;
+}
+
+void Oriented_Graph::display_graph()
+{
+    std::cout << "Number of people: " << nodes.size() << std::endl;
+    for (auto &node : nodes) {
+        std::cout << node.first << " is plotting against ";
+        for (auto &plotting : node.second->plotting_against) {
+            std::cout << plotting->name << " ";
+        }
+        std::cout << std::endl;
+    }
 }

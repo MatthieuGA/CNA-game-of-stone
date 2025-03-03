@@ -1,11 +1,12 @@
-
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17
 SRC_DIR = src
-TARGET = main
+TARGET = game_of_stones
 
 SRCS = src/main.cpp	\
-	src/Matrix.cpp
+	src/Matrix.cpp	\
+	src/Oriented_Graph.cpp	\
+	src/Conspiracy.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)
@@ -13,10 +14,12 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf $(OBJ_DIR) 
+	rm -f $(OBJS) $(TARGET)
 
-.PHONY: all clean
+re: clean all
+
+.PHONY: all clean re

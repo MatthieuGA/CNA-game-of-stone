@@ -1,4 +1,5 @@
 #include <iostream>
+#include "Conspiracy.hpp"
 
 void help()
 {
@@ -18,9 +19,10 @@ int links()
     return 0;
 }
 
-int plots()
+int plots(std::string relationship_file, std::string matrix_file)
 {
-    printf("plots\n");
+    Conspiracy conspiracy(relationship_file, matrix_file);
+    conspiracy.graph.display_graph();
     return 0;
 }
 
@@ -36,7 +38,7 @@ int main(int ac, char **av) {
     if (std::string(av[1]) == "--links") {
         return links();
     } else {
-        return plots();
+        return plots(av[2], av[3]);
     }
     return 0;
 }
