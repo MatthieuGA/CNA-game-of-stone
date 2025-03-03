@@ -47,22 +47,73 @@ Matrix Matrix::operator*(const Matrix &other) const
 
 std::ostream& Matrix::print(std::ostream& os) const
 {
-    os << "[";
     for (unsigned int i = 0; i < rows; ++i) {
-        os << "[";
         for (unsigned int j = 0; j < cols; ++j) {
             os << mat[i][j];
-            if (j < cols - 1) os << ", ";
+            if (j < cols - 1) os << " ";
         }
-        os << "]";
-        if (i < rows - 1) os << ", ";
+        if (i < rows - 1) os << "\n";
     }
-    os << "]";
+    os << "\n";
     return os;
+}
+
+void Matrix::print_legend(std::ostream& os) const
+{
+    for (const auto& pair : legend) {
+        os << pair.first << ": " << pair.second << "\n";
+    }
 }
 
 std::ostream &operator<<(std::ostream &os, const Matrix &matr)
 {
     matr.print(os);
     return os;
+}
+
+Matrix Matrix::parse_graph(const std::string &filename, const std::string &delimiter)
+{
+    std::map<std::string, int> node_map;
+    std::vector<std::pair<std::string, std::string>> edges;
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file");
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+
+        size_t pos = line.find(delimiter);
+        if (pos == std::string::npos) {
+            throw std::runtime_error("Delimiter not found in line: " + line);
+        }
+
+        std::string node1 = line.substr(0, pos);
+        std::string node2 = line.substr(pos + delimiter.length());
+
+        edges.emplace_back(node1, node2);
+        if (node_map.find(node1) == node_map.end()) {
+            node_map[node1] = node_map.size();
+        }
+        if (node_map.find(node2) == node_map.end()) {
+            node_map[node2] = node_map.size();
+        }
+    }
+
+    file.close();
+
+    Matrix graph(node_map.size(), node_map.size());
+    for (const auto &edge : edges) {
+        int idx1 = node_map[edge.first];
+        int idx2 = node_map[edge.second];
+        graph(idx1, idx2) = 1;
+        graph(idx2, idx1) = 1;
+    }
+
+    for (const auto &pair : node_map) {
+        graph.legend[pair.second] = pair.first;
+    }
+
+    return graph;
 }

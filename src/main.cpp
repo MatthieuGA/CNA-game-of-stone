@@ -1,3 +1,4 @@
+#include "Matrix.hpp"
 #include <iostream>
 #include "Conspiracy.hpp"
 
@@ -13,9 +14,11 @@ void help()
     "\tn\tmaximum length of friendship paths\n");
 }
 
-int links()
+int links(int ac, char **av)
 {
-    printf("links\n");
+    Matrix matrix = Matrix::parse_graph(av[2], " is friends with ");
+    matrix.print_legend(std::cout);
+    std::cout << matrix;
     return 0;
 }
 
@@ -36,7 +39,7 @@ int main(int ac, char **av) {
         return 84;
     }
     if (std::string(av[1]) == "--links") {
-        return links();
+        return links(ac, av);
     } else {
         return plots(av[2], av[3]);
     }

@@ -10,6 +10,11 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
+#include <map>
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
 
 class Matrix
 {
@@ -24,11 +29,15 @@ public:
     Matrix operator*(const Matrix &other) const;
 
     std::ostream& print(std::ostream& os) const;
+    void print_legend(std::ostream& os) const;
+
+    static Matrix parse_graph(const std::string &filename, const std::string &delimiter);
 
 private:
     unsigned int rows;
     unsigned int cols;
     std::vector<std::vector<double>> mat;
+    std::map<int, std::string> legend;
 };
 
 std::ostream &operator<<(std::ostream &os, const Matrix &matr);
