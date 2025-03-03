@@ -16,7 +16,7 @@ class PathToTakeDown {
 
 class Conspiracy {
     public:
-        Conspiracy(std::string relationship_file, std::string matrix_file);
+        Conspiracy(std::string relationship_file, std::string matrix_file, unsigned int n);
         ~Conspiracy();
         void display_matrix();
         Oriented_Graph graph;

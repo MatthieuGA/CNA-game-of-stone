@@ -2,6 +2,7 @@
 #include "Matrix.hpp"
 #include <iostream>
 #include "Conspiracy.hpp"
+#include <algorithm>
 
 void help()
 {
@@ -17,33 +18,64 @@ void help()
 
 int links(char **av)
 {
-    Matrix matrix = Matrix::parse_graph(av[2], " is friends with ");
-    // matrix.print_legend(std::cout);
-    // std::cout << matrix;
+    int n = std::stoi(av[4]);
+
+    if (n < 0) {
+        throw std::runtime_error("n must be a positive integer");
+    }
+    Matrix matrix = Matrix::parse_graph(av[2], " is friends with ", (unsigned int)n);
+
     std::cout << "Degree of separation between " << av[3] << " and " << av[4] << " is " << matrix.distance(av[3], av[4]) << std::endl;
     return 0;
 }
 
 int plots(std::string relationship_file, std::string matrix_file, std::string nb)
 {
+    bool treason = false;
     int n = std::stoi(nb);
 
     if (n < 0) {
         throw std::runtime_error("n must be a positive integer");
     }
-    Conspiracy conspiracy(relationship_file, matrix_file);
+    Conspiracy conspiracy(relationship_file, matrix_file, (unsigned int)n);
+    
+    conspiracy.display_matrix();
+
+    std::vector<PathToTakeDown> paths;
+    std::vector<std::string> no_conspiracy_messages;
     for (auto &node : conspiracy.graph.nodes.at(QUEEN)->plotting_me) {
-        PathToTakeDown path;
-        path = conspiracy.get_path(node->name, n, path);
+        PathToTakeDown path = conspiracy.get_path(node->name, n, PathToTakeDown());
         if (path.length == -1) {
-            std::cout << "No conspiracy possible against " << node->name << std::endl;
+            treason = true;
+            no_conspiracy_messages.push_back("No conspiracy possible against " + node->name);
         } else {
-            for (auto &node : path.path) {
-                std::cout << node << (node == path.path.back() ? "" : " <- ");
-            }
-            std::cout << std::endl;
+            paths.push_back(path);
         }
     }
+
+    std::sort(paths.begin(), paths.end(), [](const PathToTakeDown &a, const PathToTakeDown &b) {
+        if (a.length == b.length) {
+            return a.path > b.path;
+        }
+        return a.length < b.length;
+    });
+
+    for (const auto &path : paths) {
+        for (auto it = path.path.rbegin(); it != path.path.rend();) {
+            std::cout << *it << (++it == path.path.rend() ? "" : " -> ");
+        }
+        std::cout << std::endl;
+    }
+
+    for (const auto &message : no_conspiracy_messages) {
+        std::cout << message << std::endl;
+    }
+
+    std::cout << "\nResult:" << std::endl;
+    if (treason)
+        std::cout << "There is only one way out: treason!" << std::endl;
+    else
+        std::cout << "The stone is safe!" << std::endl;
     return 0;
 }
 

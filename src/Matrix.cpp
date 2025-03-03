@@ -1,4 +1,5 @@
 #include "Matrix.hpp"
+#include <climits>
 
 Matrix::Matrix(unsigned int rows, unsigned int cols) : rows(rows), cols(cols), mat(rows, std::vector<double>(cols, 0))
 {
@@ -14,11 +15,20 @@ double &Matrix::operator()(unsigned int ro, unsigned int co)
     return mat[ro][co];
 }
 
-Matrix &Matrix::operator*=(const double &other)
+Matrix &Matrix::operator*=(const int &other)
 {
     for (unsigned int i = 0; i < rows; i++) {
         for (unsigned int j = 0; j < cols; j++)
             mat[i][j] *= other;
+    }
+    return *this;
+}
+
+Matrix &Matrix::operator+=(const int &other)
+{
+    for (unsigned int i = 0; i < rows; i++) {
+        for (unsigned int j = 0; j < cols; j++)
+            mat[i][j] += other;
     }
     return *this;
 }
@@ -61,7 +71,7 @@ std::ostream& Matrix::print(std::ostream& os) const
 void Matrix::print_legend(std::ostream& os) const
 {
     for (const auto& pair : legend) {
-        os << pair.first << ": " << pair.second << "\n";
+        os << pair << "\n";
     }
 }
 
@@ -71,7 +81,7 @@ std::ostream &operator<<(std::ostream &os, const Matrix &matr)
     return os;
 }
 
-Matrix Matrix::parse_graph(const std::string &filename, const std::string &delimiter)
+Matrix Matrix::parse_graph(const std::string &filename, const std::string &delimiter, unsigned int n)
 {
     std::map<std::string, int> node_map;
     std::vector<std::pair<std::string, std::string>> edges;
@@ -88,7 +98,7 @@ Matrix Matrix::parse_graph(const std::string &filename, const std::string &delim
         if (pos == std::string::npos) {
             throw std::runtime_error("Delimiter not found in line: " + line);
         }
-        node_map["Cersei Lannister"] = 0;
+
         std::string node1 = line.substr(0, pos);
         std::string node2 = line.substr(pos + delimiter.length());
 
@@ -103,29 +113,60 @@ Matrix Matrix::parse_graph(const std::string &filename, const std::string &delim
 
     file.close();
 
-    Matrix graph(node_map.size(), node_map.size());
+    std::vector<std::string> nodes;
+    nodes.push_back("Cersei Lannister");
+    for (const auto &pair : node_map) {
+        if (pair.first != "Cersei Lannister") {
+            nodes.push_back(pair.first);
+        }
+    }
+
+    Matrix graph(nodes.size(), nodes.size());
     for (const auto &edge : edges) {
-        int idx1 = node_map[edge.first];
-        int idx2 = node_map[edge.second];
+        int idx1 = std::find(nodes.begin(), nodes.end(), edge.first) - nodes.begin();
+        int idx2 = std::find(nodes.begin(), nodes.end(), edge.second) - nodes.begin();
         graph(idx1, idx2) = 1;
         graph(idx2, idx1) = 1;
     }
 
-    graph.legend = node_map;
-
-    return graph;
+    // Create an empty relationship table and set everything to -1
+    Matrix relationship(graph.rows, graph.cols);
+    relationship += -1;
+    // Compute the relationships by multiplying the matrix in a loop
+    Matrix temp = graph;
+    for (unsigned int k = 0; k < n; ++k) {
+        for (unsigned int i = 0; i < graph.rows; ++i) {
+            for (unsigned int j = 0; j < graph.cols; ++j) {
+                if (relationship(i, j) == -1 && temp(i, j) == 1 && i != j) {
+                    relationship(i, j) = k + 1;
+                }
+            }
+        }
+        temp = temp * graph;
+    }
+    for (unsigned int i = 0; i < graph.rows; ++i) {
+        for (unsigned int j = 0; j < graph.cols; ++j) {
+            if (relationship(i, j) == -1) {
+                relationship(i, j) = 0;
+            }
+        }
+    }    
+    relationship.legend = nodes;
+    return relationship;
 }
 
 int Matrix::distance(const std::string &node1, const std::string &node2) const
 {
-    if (legend.find(node1) == legend.end() || legend.find(node2) == legend.end()) {
+    auto it1 = std::find(legend.begin(), legend.end(), node1);
+    auto it2 = std::find(legend.begin(), legend.end(), node2);
+    if (it1 == legend.end() || it2 == legend.end()) {
         return -1;
     }
 
-    int start = legend.at(node1);
-    int end = legend.at(node2);
+    int start = it1 - legend.begin();
+    int end = it2 - legend.begin();
 
-    std::vector<int> dist(rows, -1);
+    std::vector<int> dist(rows, INT_MAX);
     std::vector<bool> visited(rows, false);
     std::queue<int> q;
 
@@ -143,11 +184,11 @@ int Matrix::distance(const std::string &node1, const std::string &node2) const
         for (unsigned int i = 0; i < cols; ++i) {
             if (mat[current][i] != 0 && !visited[i]) {
                 visited[i] = true;
-                dist[i] = dist[current] + 1;
+                dist[i] = std::min(dist[i], dist[current] + static_cast<int>(mat[current][i]));
                 q.push(i);
             }
         }
     }
 
-    return -1;
+    return dist[end] == INT_MAX ? -1 : dist[end];
 }
