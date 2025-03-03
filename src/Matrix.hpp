@@ -37,7 +37,7 @@ private:
     unsigned int rows;
     unsigned int cols;
     std::vector<std::vector<double>> mat;
-    std::map<int, std::string> legend;
+    std::map<std::string, int> legend; // Changed legend type
 };
 
 std::ostream &operator<<(std::ostream &os, const Matrix &matr);
