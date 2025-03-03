@@ -77,7 +77,6 @@ Matrix Matrix::parse_graph(const std::string &filename, const std::string &delim
     std::vector<std::pair<std::string, std::string>> edges;
     std::ifstream file(filename);
     if (!file.is_open()) {
-        printf("Could not open file %s\n", filename.c_str());
         throw std::runtime_error("Could not open file");
     }
 
@@ -89,7 +88,7 @@ Matrix Matrix::parse_graph(const std::string &filename, const std::string &delim
         if (pos == std::string::npos) {
             throw std::runtime_error("Delimiter not found in line: " + line);
         }
-        node_map["Cersei Lannister"] = 0;
+
         std::string node1 = line.substr(0, pos);
         std::string node2 = line.substr(pos + delimiter.length());
 
@@ -112,7 +111,9 @@ Matrix Matrix::parse_graph(const std::string &filename, const std::string &delim
         graph(idx2, idx1) = 1;
     }
 
-    graph.legend = node_map; // Assign the node_map to the legend
+    for (const auto &pair : node_map) {
+        graph.legend[pair.second] = pair.first;
+    }
 
     return graph;
 }
