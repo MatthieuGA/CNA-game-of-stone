@@ -9,29 +9,28 @@
 #define MATRIX_HPP
 
 #include <iostream>
-#include <string>
+#include <vector>
 
-template <unsigned int row, unsigned int col>
 class Matrix
 {
 public:
-    Matrix();
+    Matrix(unsigned int rows, unsigned int cols);
 
     double operator()(unsigned int ro, unsigned int co) const;
     double &operator()(unsigned int ro, unsigned int co);
     Matrix &operator*=(const double &other);
-    Matrix &operator*=(const Matrix<col, col> &other);
+    Matrix &operator*=(const Matrix &other);
 
-    template <unsigned int col2>
-    Matrix<row, col2> operator*(const Matrix<col, col2> &other) const;
+    Matrix operator*(const Matrix &other) const;
 
     std::ostream& print(std::ostream& os) const;
 
 private:
-    int mat[row][col];
+    unsigned int rows;
+    unsigned int cols;
+    std::vector<std::vector<double>> mat;
 };
 
-template <unsigned int row, unsigned int col>
-std::ostream &operator<<(std::ostream &os, const Matrix<row, col> &matr);
+std::ostream &operator<<(std::ostream &os, const Matrix &matr);
 
-#endif //MATRIX_HPP
+#endif // MATRIX_HPP

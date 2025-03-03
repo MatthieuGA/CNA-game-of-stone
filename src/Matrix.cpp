@@ -1,76 +1,67 @@
 #include "Matrix.hpp"
 
-template <unsigned int row, unsigned int col>
-Matrix<row, col>::Matrix()
+Matrix::Matrix(unsigned int rows, unsigned int cols) : rows(rows), cols(cols), mat(rows, std::vector<double>(cols, 0))
 {
-    for (unsigned int y = 0; y < row; y++) {
-        for (unsigned int z = 0; z < col; z++)
-            mat[y][z] = 0;
-    }
 }
 
-template <unsigned int row, unsigned int col>
-double Matrix<row, col>::operator()(unsigned int ro, unsigned int co) const
+double Matrix::operator()(unsigned int ro, unsigned int co) const
 {
     return mat[ro][co];
 }
 
-template <unsigned int row, unsigned int col>
-double &Matrix<row, col>::operator()(unsigned int ro, unsigned int co)
+double &Matrix::operator()(unsigned int ro, unsigned int co)
 {
     return mat[ro][co];
 }
 
-template <unsigned int row, unsigned int col>
-Matrix<row, col> &Matrix<row, col>::operator*=(const double &other)
+Matrix &Matrix::operator*=(const double &other)
 {
-    for (unsigned int i = 0; i < row; i++) {
-        for (unsigned int j = 0; j < col; j++)
+    for (unsigned int i = 0; i < rows; i++) {
+        for (unsigned int j = 0; j < cols; j++)
             mat[i][j] *= other;
     }
     return *this;
 }
 
-template <unsigned int row, unsigned int col>
-Matrix<row, col> &Matrix<row, col>::operator*=(const Matrix<col, col> &other)
+Matrix &Matrix::operator*=(const Matrix &other)
 {
     *this = *this * other;
     return *this;
 }
 
-template <unsigned int row, unsigned int col>
-template <unsigned int col2>
-Matrix<row, col2> Matrix<row, col>::operator*(const Matrix<col, col2> &other) const
+Matrix Matrix::operator*(const Matrix &other) const
 {
-    Matrix<row, col2> newmatrix;
-    for (unsigned int x = 0; x < row; x++) {
-        for (unsigned int y = 0; y < col2; y++) {
-            for (unsigned int z = 0; z < col; z++)
+    if (cols != other.rows) {
+        throw std::invalid_argument("Matrix dimensions do not match for multiplication");
+    }
+
+    Matrix newmatrix(rows, other.cols);
+    for (unsigned int x = 0; x < rows; x++) {
+        for (unsigned int y = 0; y < other.cols; y++) {
+            for (unsigned int z = 0; z < cols; z++)
                 newmatrix(x, y) += mat[x][z] * other(z, y);
         }
     }
     return newmatrix;
 }
 
-template <unsigned int row, unsigned int col>
-std::ostream& Matrix<row, col>::print(std::ostream& os) const
+std::ostream& Matrix::print(std::ostream& os) const
 {
     os << "[";
-    for (unsigned int i = 0; i < row; ++i) {
+    for (unsigned int i = 0; i < rows; ++i) {
         os << "[";
-        for (unsigned int j = 0; j < col; ++j) {
+        for (unsigned int j = 0; j < cols; ++j) {
             os << mat[i][j];
-            if (j < col - 1) os << ", ";
+            if (j < cols - 1) os << ", ";
         }
         os << "]";
-        if (i < row - 1) os << ", ";
+        if (i < rows - 1) os << ", ";
     }
     os << "]";
     return os;
 }
 
-template <unsigned int row, unsigned int col>
-std::ostream &operator<<(std::ostream &os, const Matrix<row, col> &matr)
+std::ostream &operator<<(std::ostream &os, const Matrix &matr)
 {
     matr.print(os);
     return os;
