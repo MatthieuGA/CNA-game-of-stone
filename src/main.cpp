@@ -59,7 +59,7 @@ int plots(std::string relationship_file, std::string matrix_file, std::string nb
         }
         return a.length < b.length;
     });
-
+    std::cout << "Conspiracies:" << std::endl;
     for (const auto &path : paths) {
         for (auto it = path.path.rbegin(); it != path.path.rend();) {
             std::cout << *it << (++it == path.path.rend() ? "" : " -> ");
