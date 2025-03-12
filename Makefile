@@ -20,6 +20,9 @@ $(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp
 clean:
 	rm -f $(OBJS) $(TARGET)
 
+fclean: clean
+	rm -f $(TARGET)
+
 re: clean all
 
 .PHONY: all clean re
