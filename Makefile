@@ -23,6 +23,9 @@ clean:
 fclean: clean
 	rm -f $(TARGET)
 
+tests_run:
+	echo "I'm a buncha of tests"
+
 re: clean all
 
 .PHONY: all clean re
