@@ -25,7 +25,7 @@ int links(char **av)
     }
     Matrix matrix = Matrix::parse_graph(av[2], " is friends with ", (unsigned int)n);
 
-    std::cout << "Degree of separation between " << av[3] << " and " << av[4] << " is " << matrix.distance(av[3], av[4]) << std::endl;
+    std::cout << "Degree of separation between " << av[3] << " and " << av[4] << ":" << matrix.distance(av[3], av[4]) << std::endl;
     return 0;
 }
 
